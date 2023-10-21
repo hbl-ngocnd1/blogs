@@ -152,3 +152,76 @@ delete(timeZone, "PDT")  // Now on Standard Time
 - Constants in Go are created at compile time, even when defined as locals in functions, and can only be numbers, characters (runes), strings or booleans.
 1<<3 is a constant expression, while math.Sin(math.Pi/4) is not because the function call to math.Sin needs to happen at run time.
 
+## Methods
+Value Methods: Gán method cho kiểu
+```go
+type ByteSlice []byte
+
+func (slice ByteSlice) Append(data []byte) []byte {
+    // Body exactly the same as the Append function defined above.
+}
+```
+
+Pointer Methods: Dùng con trỏ để overwrite lại slice
+```go
+func (p *ByteSlice) Append(data []byte) {
+    slice := *p
+    // Body as above, without the return.
+    *p = slice
+}
+```
+Cách viết tốt hơn của hàm tiêu chuẩn Write
+```go
+func (p *ByteSlice) Write(data []byte) (n int, err error) {
+    slice := *p
+    // Again as above.
+    *p = slice
+    return len(data), nil
+}
+```
+
+Rules: Value methods can be invoked on pointers and values, but pointer methods can only be invoked on pointers
+
+## Interfaces and other types
+### Interfaces
+Interfaces in Go provide a way to specify the behavior of an object: if something can do this, then it can be used here.
+
+A type can implement multiple interfaces. For instance, a collection can be sorted by the routines in package sort if it implements sort.Interface, which contains Len(), Less(i, j int) bool, and Swap(i, j int), and it could also have a custom formatter
+
+```go
+type Sequence []int
+
+// Methods required by sort.Interface.
+func (s Sequence) Len() int {
+    return len(s)
+}
+func (s Sequence) Less(i, j int) bool {
+    return s[i] < s[j]
+}
+func (s Sequence) Swap(i, j int) {
+    s[i], s[j] = s[j], s[i]
+}
+
+// Copy returns a copy of the Sequence.
+func (s Sequence) Copy() Sequence {
+    copy := make(Sequence, 0, len(s))
+    return append(copy, s...)
+}
+
+// Method for printing - sorts the elements before printing.
+func (s Sequence) String() string {
+    s = s.Copy() // Make a copy; don't overwrite argument.
+    sort.Sort(s)
+    str := "["
+    for i, elem := range s { // Loop is O(N²); will fix that in next example.
+        if i > 0 {
+            str += " "
+        }
+        str += fmt.Sprint(elem)
+    }
+    return str + "]"
+}
+
+```
+### Interface conversions and type assertions
+

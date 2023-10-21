@@ -12,6 +12,8 @@ include:
   - ./golang/why_go_jp.md
   - ./golang/benchmark.md
   - ./golang/golang_effective_notes.md
+  - ./golang/clean_architecture.md
   - ./healthline/sleep-pattern.md
   - ./aws/cognito.md
+  - ./aws/csap.md
 theme: jekyll-theme-cayman
